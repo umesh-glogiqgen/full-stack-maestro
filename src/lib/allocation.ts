@@ -65,7 +65,7 @@ export interface ScoredWorker<T extends ScorableWorker = ScorableWorker> {
   workloadPercent: number;
   reasons: string[];
   eligible: boolean;
-  excludedReason?: string;
+  excludedReason?: string | undefined;
 }
 
 export function haversineKm(
@@ -148,7 +148,7 @@ export function scoreWorker<T extends ScorableWorker>(
     worker.availability === "available" ? 100 : worker.availability === "busy" ? 45 : 0;
   const workload = Math.max(0, 100 - wl);
   const recentJobs = Math.max(0, 100 - Math.min(worker.recent_jobs, 12) * 8);
-  const rating = worker.rating_safe();
+  const rating = Math.max(0, Math.min(100, Number(worker.rating) * 20));
   const experience = Math.min(100, worker.experience_years * 10);
 
   const breakdown: ScoreBreakdown = {
